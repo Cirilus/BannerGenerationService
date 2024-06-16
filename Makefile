@@ -3,4 +3,4 @@ up:
 	poetry run uvicorn app:app --reload --port 8000
 
 download_models:
-	mkdir -p models && cd models && wget https://huggingface.co/IlyaGusev/saiga_mistral_7b_gguf/resolve/main/model-q8_0.gguf
+	mkdir -p models && cd models && wget -O realisticVisionV60B1_v51HyperVAE.safetensors https://civitai.com/api/download/models/501240?type=Model&format=SafeTensor&size=full&fp=fp16
