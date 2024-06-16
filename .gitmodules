@@ -12,6 +12,6 @@
 	url = https://github.com/Cirilus/BannerGenerationService.git
 	branch = image-generation
 [submodule "frontend"]
-	path = frontned
+	path = frontend
 	url = https://github.com/Cirilus/BannerGenerationService.git
 	branch = frontend
