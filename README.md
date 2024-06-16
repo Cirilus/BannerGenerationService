@@ -32,15 +32,15 @@
 4. Создать файл .env в backend/configs/
 - Скопировать данные из backend/configs/.env.example в backend/configs/.env
 - Заполнить данные в backend/configs/.env
-7.  Зайти в backend запустить команду `
+5.  Зайти в backend запустить команду
    ```bash
     make download_models
    ```
-7. Зайти в image-generation запустить команду
+6. Зайти в image-generation запустить команду
    ```bash
     make download_models
    ```
-9. Соберите и запустите контейнеры:
+7. Соберите и запустите контейнеры:
     ```bash
     docker-compose up --build
     ```
