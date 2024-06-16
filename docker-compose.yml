@@ -95,7 +95,7 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
     depends_on:
-      - app
+      - backend
     ports:
       - "80:80"
       - "443:443"
