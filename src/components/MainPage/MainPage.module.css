@@ -1,0 +1,370 @@
+body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.BodyContainer {
+    width: 100%;
+    height: 120%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.MainContainer {
+    width: 100%;
+    height: 100vw;
+    display: flex;
+    gap: 2%;
+    flex-direction: row;
+    padding-left: 1%;
+    padding-top: 2%;
+}
+
+.SideBar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 340px;
+    align-items: center;
+}
+
+.Navigation {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+    padding-top: 15%;
+}
+
+.CreateBannerContainer {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,15px,20px);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px;
+    border-radius: 12px;
+    width: 100%;
+    background-color: #EFEFEF;
+    box-shadow: 1px 1px 1px grey;
+    cursor: pointer;
+}
+
+.BannerContainer {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,15px,20px);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px;
+    border-radius: 12px;
+    width: 100%;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.TextContainer {
+    color: #6F767E;
+    padding-left: 4%;
+    outline: none;
+    text-decoration: none;
+}
+
+.CreateContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.HeaderContainer {
+    height: 95px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.HeaderButton{
+    margin-right: 5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1px 8px 1px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,15px,20px);
+    color: white;
+    font-weight: bold;
+    background-color: #384B8E;
+    height: 48px;
+}
+
+.ContentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 3%;
+    width: 100%;
+    height: 70%;
+    background-color: #F4F4F4;
+    padding-left: 2%;
+    padding-top: 2%;
+}
+
+.ContentHeaderBanner {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(28px,40px,48px);
+    font-weight: bold;
+}
+
+.ContentBannerContainer {
+    width: 93%;
+
+    display: flex;
+    flex-direction: column;
+    background-color: #FCFCFC;
+    border-radius: 8px;
+}
+
+.ContentBannerPadding {
+    width: 93%;
+    padding-left: 2%;
+    padding-top: 2%;
+}
+
+.HeaderOfBanner {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 16%;
+}
+
+.NumberContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1em;
+    width: 100%;
+}
+
+.Number {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,24px,30px);
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+    padding: 1px 10px 1px 10px;
+    background-color: #384B8E;
+}
+
+.TextNumber {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,20px,25px);
+    font-weight: unset;
+}
+
+.BackLogo {
+    padding-left: 10%;
+}
+
+.BackContainer {
+    cursor: pointer;
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,13px,20px);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10%;
+    width: 100px;
+    border: 1px solid #EFEFEF;
+    border-radius: 8px;
+}
+
+.BannerContent {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.BannerThemeContainer {
+    padding-top: 2%;
+}
+
+.nameOfBannerContainer {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,14px,20px);
+    font-weight: 600;
+    padding-bottom: 1%;
+}
+
+.BannerStyle {
+    padding-top: 1%;
+}
+
+.BannerQuestion {
+    padding-top: 1%;
+}
+
+.BannerLaw {
+    padding-top: 1%;
+}
+
+.Dropdown {
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,15px,20px);
+    font-weight: 600;
+    margin-top: 1%;
+    width: 100%;
+    height: 3em;
+    border-radius: 12px;
+    border: 2px solid #B4D4FF;
+}
+
+.background {
+    background-color: #3E4C5C;
+    border-radius: 5px;
+    padding: 2px 2px 2px 2px;
+    color: white;
+}
+
+.strong {
+    color: red;
+}
+
+.textField {
+    border: 2px solid #B4D4FF;
+    border-radius: 12px;
+    width: 98%;
+    height: 70px;
+    padding: 10px 10px 10px 10px;
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,16px,20px);
+    margin-bottom: 1%;
+}
+
+.UploadImage {
+    display: flex;
+    flex-direction: column;
+}
+
+.UploadImageContainer {
+    background-color: #F4F4F4;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 2%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.Upload {
+    font-family: Manrope, sans-serif;
+    font-size: 16px;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.hiddenInput {
+    display: none; /* Скрыть стандартный элемент input */
+}
+
+.customButton {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: none; /* Убрать фон */
+    border: 1px solid #ccc; /* Установить границу */
+    padding: 8px 12px; /* Установить внутренний отступ */
+    font-size: 16px; /* Установить размер шрифта */
+    border-radius: 4px; /* Установить радиус скругления углов */
+    cursor: pointer; /* Изменить курсор на указатель */
+    font-family: Manrope, sans-serif;
+    font-weight: bold;
+}
+
+.Image {
+    padding-right: 5px;
+}
+
+.ButtonsFooter {
+    font-family: Manrope, sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-right: 5%;
+    width: 100%;
+    margin-top: 2%;
+}
+
+.SaveButton {
+    background-color: #FFFFFF;
+    border: 1px solid #EFEFEF;
+    border-radius: 8px ;
+    padding: 1%;
+    cursor: pointer;
+    margin-right: 5%;
+    width: 200px;
+}
+
+.DaleeButton {
+    background-color: #384B8E;
+    border: none;
+    border-radius: 8px ;
+    color: white;
+    cursor: pointer;
+    margin-right: 5%;
+    width: 200px;
+}
+
+.NumberField {
+    border: 2px solid #B4D4FF;
+    border-radius: 12px;
+    width: 98%;
+    height: 40px;
+    padding: 10px 10px 10px 10px;
+    font-family: Manrope, sans-serif;
+    font-size: clamp(12px,16px,20px);
+    margin-bottom: 1%;
+}
+
+.Canvas {
+    display: flex;
+    flex-direction: column;
+    width: 1000px;
+    height: 1000px;
+    padding-top: 2%;
+    padding-left: 5%;
+    border-radius: 30px;
+}
+
+.ContentContainerForCanvas {
+    display: flex;
+    flex-direction: column;
+    gap: 3%;
+    width: 100%;
+    height: 100%;
+    background-color: #F4F4F4;
+    padding-left: 2%;
+    padding-top: 2%;
+}
+
+.ContentBannerCanvasContainer {
+    width: 93%;
+    height: 98%;
+    display: flex;
+    flex-direction: column;
+    background-color: #FCFCFC;
+    border-radius: 8px;
+    padding-bottom: 2%;
+}
