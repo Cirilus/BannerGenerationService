@@ -9,6 +9,7 @@ class CreateBannersRequest(BaseModel):
     law_text: str
     width: int
     height: int
+    photo_style: str
 
 
 class LogoCoordinates(BaseModel):

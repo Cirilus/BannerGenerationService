@@ -45,6 +45,7 @@ class MlService:
                 "width": req.width,
                 "height": req.height,
                 "law_text": req.law_text,
+                "photo_style": req.photo_style,
             },
         )
         images = resp.json()
