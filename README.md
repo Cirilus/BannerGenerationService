@@ -1,7 +1,5 @@
 # BannerGenerationService
 
-![BannerGenerationService](https://githubusercontent.com/path/to/banner-image.png)
-
 ## Описание
 **BannerGenerationService** — передовой сервис для банков, который позволяет генерировать персонализированные маркетинговые предложения в виде изображений, оптимизируя коммуникацию с клиентами с помощью машинного обучения.
 
