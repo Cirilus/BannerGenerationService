@@ -27,14 +27,20 @@
     make up update-submodules
     ```
 3. Создать файл .env в .docker
-4. Скопировать данные из .docker/.env.example в .docker/.env
-5. Заполнить данные в .docker/.env
-6. Создать файл .env в backend/configs/
-7. Скопировать данные из backend/configs/.env.example в backend/configs/.env
-8. Заполнить данные в backend/configs/.env
-9.  Зайти в backend запустить команду `make download_models`
-10. Зайти в image-generation запустить команду `make download_models`
-11. Соберите и запустите контейнеры:
+    3.1. Скопировать данные из .docker/.env.example в .docker/.env
+    3.2. Заполнить данные в .docker/.env
+4. Создать файл .env в backend/configs/
+    4.1. Скопировать данные из backend/configs/.env.example в backend/configs/.env
+    4.2. Заполнить данные в backend/configs/.env
+5.  Зайти в backend запустить команду `
+   ```bash
+    make download_models
+   ```
+7. Зайти в image-generation запустить команду
+   ```bash
+    make download_models
+   ```
+9. Соберите и запустите контейнеры:
     ```bash
     docker-compose up --build
     ```
