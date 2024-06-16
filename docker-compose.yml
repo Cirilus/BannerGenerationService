@@ -1,6 +1,6 @@
 version: "3"
 services:
-  app:
+  backend:
     build:
       context: backend
       dockerfile: Dockerfile
@@ -11,6 +11,16 @@ services:
     command: >
       bash -c "alembic upgrade head && poetry run uvicorn app:app --host 0.0.0.0 --port 8000"
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    command: >
+      bash -c "npm run build"
+    volumes:
+      - frontend_volume:/app/dist
 
   llm:
     build:
@@ -93,3 +103,4 @@ services:
 volumes:
   postgres_storage:
   static_storage:
+  frontend_volume:
