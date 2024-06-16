@@ -5,8 +5,8 @@ from constants import COLORS
 genImage = GenerateImage()
 
 
-def result_pipeline_llm(content: str, json_data: dict, law_text: str):
-    logo_image = generate_photo_pipeline(content=content)
+def result_pipeline_llm(content: str, json_data: dict, law_text: str, photo_style: str):
+    logo_image = generate_photo_pipeline(content=content, photo_style=photo_style)
     result_banner = []
     for color in COLORS:
         background = overlay_svg_on_image(
@@ -23,8 +23,8 @@ def result_pipeline_llm(content: str, json_data: dict, law_text: str):
     return result_banner
 
 
-def generate_photo_pipeline(content: str):
-    prompt = genImage.init_style(content)
+def generate_photo_pipeline(content: str, photo_style: str):
+    prompt = genImage.init_style(content=content, photo_style=photo_style)
     logo_image = genImage.gen_logo(prompt)
     return logo_image
 
@@ -53,7 +53,7 @@ json_data = {
     ],
 }
 result_pipeline_llm(
-    content=json_data["service"], json_data=json_data, law_text="Юридический текст"
+    content=json_data["service"], json_data=json_data, law_text="Юридический текст", photo_style="Аниме"
 )
 
 #{'service': 'Автомобильный кредит', 'image_size': [620, 800], 'background_color': [242, 242, 242], 'logo': {'coordinates': {'x': 350, 'y': 400, 'width': 260, 'height': 260}}, 'texts': [{'text': 'Без первоначального взноса и низкие проценты!', 'coordinates': {'x': 50, 'y': 100}, 'style': {'font-size': 34, 'color': '#f2f2f2'}}, {'text': 'Процентная ставка от 6.8%', 'coordinates': {'x': 50, 'y': 220}, 'style': {'font-size': 30, 'color': '#f2f2f2'}}, {'text': 'Быстро оформление и без лишних вопросов!', 'coordinates': {'x': 50, 'y': 340}, 'style': {'font-size': 30, 'color': '#f2f2f2'}}]}

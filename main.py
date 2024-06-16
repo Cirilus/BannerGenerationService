@@ -25,8 +25,9 @@ class GenerateImage:
             self.pipeSD.scheduler.config
         )
 
-    def init_style(self, content: str, need_lora: bool = False):
-        service_info = prompt_list.get(content, "Информация об услуге не найдена")
+    def init_style(self, content: str, photo_style: str, need_lora: bool = False):
+        style = prompt_list.get(photo_style, "Информация о стиле не найдена")
+        service_info = style.get(content, "Информация об услуге не найдена")
         if need_lora:
             self.pipeSD.load_lora_weights(lora_path)
         return service_info

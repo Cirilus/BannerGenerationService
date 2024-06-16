@@ -18,6 +18,7 @@ def create_image(req: CreateImageRequest):
         req.width,
         req.height,
         req.law_text,
+        req.photo_style
     )
 
     base64_images = []
