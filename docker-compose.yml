@@ -10,6 +10,7 @@ services:
         condition: service_healthy
     command: >
       bash -c "alembic upgrade head && poetry run uvicorn app:app --host 0.0.0.0 --port 8000"
+    restart: unless-stopped
 
   llm:
     build:
@@ -25,6 +26,7 @@ services:
             - driver: nvidia
               count: all
               capabilities: [ gpu ]
+    restart: unless-stopped
 
   sd:
     build:
@@ -40,6 +42,7 @@ services:
             - driver: nvidia
               count: all
               capabilities: [ gpu ]
+    restart: unless-stopped
 
   postgres:
     image: postgres:latest
