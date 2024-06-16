@@ -1,17 +1,17 @@
 
 [submodule "backend"]
 	path = backend
-	url = git@github.com:Cirilus/BannerGenerationService.git
+	url = https://github.com/Cirilus/BannerGenerationService.git
 	branch = backend
 [submodule "llm"]
 	path = llm
-	url = git@github.com:Cirilus/BannerGenerationService.git
+	url = https://github.com/Cirilus/BannerGenerationService.git
 	branch = llm
 [submodule "image-generation"]
 	path = image-generation
-	url = git@github.com:Cirilus/BannerGenerationService.git
+	url = https://github.com/Cirilus/BannerGenerationService.git
 	branch = image-generation
 [submodule "frontend"]
-  path = frontned
-  url = git@github.com:Cirilus/BannerGenerationService.git
-  branch = frontend
+	path = frontned
+	url = https://github.com/Cirilus/BannerGenerationService.git
+	branch = frontend
