@@ -1,5 +1,7 @@
 # BannerGenerationService
 
+#  Решение использует submodules, смотрите ветки
+
 ## Описание
 **BannerGenerationService** — передовой сервис для банков, который позволяет генерировать персонализированные маркетинговые предложения в виде изображений, оптимизируя коммуникацию с клиентами с помощью машинного обучения.
 
@@ -30,8 +32,9 @@
 6. Создать файл .env в backend/configs/
 7. Скопировать данные из backend/configs/.env.example в backend/configs/.env
 8. Заполнить данные в backend/configs/.env
-9. Зайти в backend запустить команду `make `
-9. Соберите и запустите контейнеры:
+9.  Зайти в backend запустить команду `make download_models`
+10. Зайти в image-generation запустить команду `make download_models`
+11. Соберите и запустите контейнеры:
     ```bash
     docker-compose up --build
     ```
