@@ -24,7 +24,14 @@
     make up install-submodules
     make up update-submodules
     ```
-3. Соберите и запустите контейнеры:
+3. Создать файл .env в .docker
+4. Скопировать данные из .docker/.env.example в .docker/.env
+5. Заполнить данные в .docker/.env
+6. Создать файл .env в backend/configs/
+7. Скопировать данные из backend/configs/.env.example в backend/configs/.env
+8. Заполнить данные в backend/configs/.env
+9. Зайти в backend запустить команду `make `
+9. Соберите и запустите контейнеры:
     ```bash
     docker-compose up --build
     ```
