@@ -44,3 +44,10 @@ class CreateImageRequest(BaseModel):
     width: int
     height: int
     photo_style: str
+
+
+class CreateImageWithoutTextRequest(BaseModel):
+    content: str
+    width: int
+    height: int
+    photo_style: str

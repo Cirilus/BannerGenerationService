@@ -59,7 +59,7 @@ def draw_text_and_logo_on_image(background, json_data, logo, law_text):
         padding_y = -30
         padding_x = 10
         add_font_size = -7
-    elif image_height < 1000:
+    elif image_height < 1200:
         padding_y = 70
     else:
         padding_y = 130
@@ -116,7 +116,7 @@ def draw_text_and_logo_on_image(background, json_data, logo, law_text):
                     - increased_font.getbbox(text_after_number)[1]
                 )
             else:
-                draw.text((x-padding_x, y), line, font=font, fill=text_color)
+                draw.text((x, y), line, font=font, fill=text_color)
                 y += font.getbbox(line)[3] - font.getbbox(line)[1]
 
     # Добавляем маленький серый текст в левом нижнем углу
@@ -174,9 +174,57 @@ def draw_text_and_logo_on_image(background, json_data, logo, law_text):
 
     # Накладываем логотип на задний фон
     background = Image.alpha_composite(background.convert("RGBA"), logo_layer)
-    #background.save(f"back{color}.png", "PNG")
+    background.save(f"back{color}.png", "PNG")
     return background
 
+
+def draw_text_and_logo_on_image_without_text(background, logo):
+
+    if background.getpixel((0, 0)) == (242, 242, 242, 255):
+        color = "#0269B6"
+    else:
+        color = "#f2f2f2"
+
+
+    # Размеры заднего фона
+    bg_width, bg_height = background.size
+
+    # Увеличиваем логотип
+    logo_scale_factor = 1
+    new_logo_width = int((bg_width / 2) * logo_scale_factor)
+    new_logo_height = int(
+        (bg_height / 2) * logo_scale_factor
+    )  # Сдвиг по оси Y для создания эффекта полу овала
+    logo = logo.resize((new_logo_width, new_logo_height), Image.LANCZOS)
+
+    # Создаем маску для логотипа в виде полу овала
+    mask_size = (new_logo_width, new_logo_height)
+    mask = Image.new("L", mask_size, 0)
+    draw_mask = ImageDraw.Draw(mask)
+    draw_mask.pieslice([0, 0, mask_size[0] * 2, mask_size[1] * 2], 130, 300, fill=255)
+
+    # Создаем изображение для обводки
+    outline = Image.new("L", mask_size, 0)
+    draw_outline = ImageDraw.Draw(outline)
+    draw_outline.pieslice(
+        [0, 0, mask_size[0] * 2, mask_size[1] * 2], 130, 300, outline=255, width=2
+    )
+
+    # Позиционируем логотип в нижнем правом углу, сдвигая его влево
+    position = (bg_width - new_logo_width, bg_height - new_logo_height)
+
+    # Создаем новый слой для логотипа и маски
+    logo_layer = Image.new("RGBA", background.size)
+    logo_layer.paste(logo, position, mask)
+
+    # Накладываем обводку
+    draw_logo_layer = ImageDraw.Draw(logo_layer)
+    draw_logo_layer.bitmap(position, outline, fill=color)
+
+    # Накладываем логотип на задний фон
+    background = Image.alpha_composite(background.convert("RGBA"), logo_layer)
+    background.save(f"back{color}.png", "PNG")
+    return background
 
 def overlay_svg_on_image(background_color, sample):
     if background_color == (242, 242, 242):
