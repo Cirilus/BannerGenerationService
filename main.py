@@ -3,7 +3,7 @@ from model import LLama3Quantized
 from schemas import ModelKwargs
 
 kwargs = ModelKwargs(
-    temperature=0.7,
+    temperature=0.8,
     top_k=30,
     top_p=0.9,
     max_tokens=8192,
