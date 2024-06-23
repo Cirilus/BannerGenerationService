@@ -1,1 +1,1 @@
-from models import image, user
+from models import image, user, preference

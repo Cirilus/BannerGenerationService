@@ -48,3 +48,4 @@ class CreateBannersTextResponse(BaseModel):
 
 class CreateBannersResponse(BaseModel):
     images: list[str]
+    banners: CreateBannersTextResponse

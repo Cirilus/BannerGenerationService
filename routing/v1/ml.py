@@ -34,3 +34,28 @@ async def create_banner(
         )
 
     return images
+
+
+@router.post(
+    "/create_banner_without_text",
+    summary="Создание баннера",
+    response_model=CreateBannersResponse,
+)
+async def create_banner_without_text(
+    req: CreateBannersRequest,
+    user: User = Depends(authenticated),
+    ml_service: MlService = Depends(),
+    image_service: ImageService = Depends(),
+):
+    images = await ml_service.create_banner_without_text(req)
+    for image in images.images:
+        await image_service.create(
+            ImageCreateOpts(
+                file=base64_to_bytes(image),
+                path=str(user.id),
+                is_successful=None,
+                user=user.id,
+            )
+        )
+
+    return images

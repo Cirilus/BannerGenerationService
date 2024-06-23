@@ -1,4 +1,3 @@
-
 import httpx
 from fastapi import Depends
 
@@ -36,7 +35,7 @@ class MlService:
 
     async def create_banner_image(
         self, req: CreateBannersRequest, banner_text: CreateBannersTextResponse
-    ) -> CreateBannersResponse:
+    ) -> list[str]:
         resp = await self._client.post(
             f"{self._sd_base_url}/create_image",
             json={
@@ -48,15 +47,38 @@ class MlService:
                 "photo_style": req.photo_style,
             },
         )
-        images = resp.json()
+        response = resp.json()
 
-        images = CreateBannersResponse(**images)
+        return response["images"]
 
-        return images
+    async def create_banner_image_without_text(
+        self, req: CreateBannersRequest
+    ) -> list[str]:
+        resp = await self._client.post(
+            f"{self._sd_base_url}/create_image_without_text",
+            json={
+                "content": req.content,
+                "width": req.width,
+                "height": req.height,
+                "photo_style": req.photo_style,
+            },
+        )
+        response = resp.json()
+
+        return response["images"]
 
     async def create_banner(self, req: CreateBannersRequest) -> CreateBannersResponse:
         banner_text = await self.create_banner_text(req)
 
         images = await self.create_banner_image(req, banner_text)
 
-        return images
+        return CreateBannersResponse(images=images, banners=banner_text)
+
+    async def create_banner_without_text(
+        self, req: CreateBannersRequest
+    ) -> CreateBannersResponse:
+        banner_text = await self.create_banner_text(req)
+
+        images = await self.create_banner_image_without_text(req)
+
+        return CreateBannersResponse(images=images, banners=banner_text)

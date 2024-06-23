@@ -9,7 +9,7 @@ minio_client = Minio(
     env.MINIO_HOST,
     access_key=env.MINIO_ACCESS,
     secret_key=env.MINIO_SECRET,
-    secure=False,
+    secure=True,
 )
 
 

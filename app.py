@@ -11,6 +11,7 @@ from routing.v1.image import router as image_router
 from routing.v1.user import router as user_router
 from routing.v1.auth import router as auth_router
 from routing.v1.ml import router as ml_router
+from routing.v1.preference import router as preference_router
 
 app = FastAPI(openapi_url="/core/openapi.json", docs_url="/core/docs")
 
@@ -18,7 +19,7 @@ init_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="https://84.38.185.14.sslip.io",
+    allow_origins=["https://84.38.185.14.sslip.io", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,3 +36,4 @@ app.include_router(image_router)
 app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(ml_router)
+app.include_router(preference_router)

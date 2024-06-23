@@ -18,13 +18,13 @@ class UserServiceListOpts(BaseModel):
 
 
 class UserServiceCreateOpts(BaseModel):
-    firstname: str
-    middlename: str
-    lastname: str
+    firstname: str | None = None
+    middlename: str | None = None
+    lastname: str | None = None
     password: str
     email: str
     phone: str | None = None
-    preference: str
+    preference: str | None = None
 
 
 class UserResponse(BaseModel):
