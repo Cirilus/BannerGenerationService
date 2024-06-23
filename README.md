@@ -95,6 +95,11 @@
 4. **Безопасность и надежность**: Авторизация через JWT и использование PostgreSQL для хранения данных.
 5. **История и анализ**: Ведение истории генерации и возможность разметки для последующего анализа и улучшения модели.
 
+## Jupyters Notebooks
+1. [Пайплай дообучение лоры](./jupyter-notebooks/CreateSDLora.ipynb)
+2. [Хз](./jupyter-notebooks/InpaitingBack.ipynb)
+3. [Кластеризация пользователей](./jupyter-notebooks/UserClusterization.ipynb)
+
 ## Тестирование
 1. Запуск unit и контрактных тестов:
     ```bash
