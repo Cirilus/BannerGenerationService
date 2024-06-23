@@ -75,9 +75,6 @@ services:
     restart: unless-stopped
     volumes:
       - static_storage:/data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     env_file:
       - .docker/.env
     command: server /data --console-address :9001
@@ -104,6 +101,8 @@ services:
       - "80:80"
       - "443:443"
       - "8000:8000"
+      - "9000:9000"
+      - "9001:9001"
 
 volumes:
   postgres_storage:
