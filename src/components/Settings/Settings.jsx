@@ -6,7 +6,7 @@ import Time from "../../assets/Time.svg";
 import SettingsS from "../../assets/Settings.svg";
 import Search from "../../assets/Search.svg";
 import Back from "../../assets/Back.svg";
-import {useState} from "react";
+import React, {useState} from "react";
 
 const Settings = () => {
 
@@ -41,7 +41,7 @@ const Settings = () => {
                 <div className={styles.CreateContainer}>
                     <div className={styles.BannerCreatedContainer}>
                         <div className={styles.HeaderContainer}>
-                            <div className={styles.HeaderButton}>Создать новый баннер</div>
+                            <Link to={"/main"} className={styles.HeaderButton}>Создать новый баннер</Link>
                         </div>
                     </div>
                     <div className={styles.ContentContainer}>
@@ -51,7 +51,7 @@ const Settings = () => {
                                 <div className={styles.HeaderOfBanner}>
                                     <div className={styles.BackContainer}>
                                         <img src={Back} className={styles.BackLogo} alt="BackButton"/>
-                                        <div>Назад</div>
+                                        <Link to={"/history"} className={styles.backButton}>Назад</Link>
                                     </div>
                                 </div>
                                 <div className={styles.Buttons}>

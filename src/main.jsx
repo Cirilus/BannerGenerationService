@@ -8,6 +8,7 @@ import Registration from "./components/Registration/Registration.jsx";
 import MainPage from "./components/MainPage/MainPage.jsx";
 import History from "./components/History/History.jsx";
 import Settings from "./components/Settings/Settings.jsx";
+import Test from "./components/Test.jsx";
 
 const store = new Store();
 export const Context = createContext({
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
     {
         path:"/settings",
         element: <Settings />
+    },
+    {
+      path:"/test",
+      element: <Test/>
     }
 ])
 

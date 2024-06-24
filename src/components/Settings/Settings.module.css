@@ -103,6 +103,7 @@ body {
     font-weight: bold;
     background-color: #384B8E;
     height: 48px;
+    text-decoration: none;
 }
 
 
@@ -258,4 +259,9 @@ input:checked + .slider:before {
 
 .slider.round {
     border-radius: 25px;
+}
+
+.backButton {
+    text-decoration: none;
+    color: black;
 }

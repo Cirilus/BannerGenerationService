@@ -11,6 +11,7 @@ import {Context} from "../../main.jsx";
 const History = () => {
     const { store } = useContext(Context);
     const [banners, setBanners] = useState([]);
+    const [bannerStatuses, setBannerStatuses] = useState(banners.map(banner => banner.is_successful));
 
     useEffect(() => {
         store.bannerList()
@@ -21,6 +22,23 @@ const History = () => {
                 console.log('Error fetching banners:', error);
             });
     }, [store]);
+
+
+
+
+    const handleStatusClick = async (index, isSuccessful) => {
+        const updatedStatuses = [...bannerStatuses];
+        updatedStatuses[index] = isSuccessful;
+        setBannerStatuses(updatedStatuses);
+
+        const bannerId = banners[index].id;
+        // Отправляем запрос на сервер с ID баннера и его статусом
+        try {
+            await store.isSuccesfulBanner(bannerId, isSuccessful);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     return (
         <div className={styles.BodyContainer}>
@@ -47,7 +65,7 @@ const History = () => {
                 <div className={styles.CreateContainer}>
                     <div className={styles.BannerCreatedContainer}>
                         <div className={styles.HeaderContainer}>
-                            <div className={styles.HeaderButton}>Создать новый баннер</div>
+                            <Link to={"/main"} className={styles.HeaderButton}>Создать новый баннер</Link>
                         </div>
                     </div>
                     <div className={styles.ContentContainer}>
@@ -63,21 +81,38 @@ const History = () => {
                                 <div className={styles.historyMap}>
                                     <div className={styles.names}>
                                         <div className={styles.textBanners}>Баннер</div>
-                                        <div className={styles.textBanners}>Опубликовано</div>
+                                        <div className={styles.textBanners}>Успешно</div>
                                         <div className={styles.textBanners}>Автор</div>
                                         <div className={styles.textBanners}>Дата</div>
+                                        <div className={styles.textBanners}>Успешность</div>
                                     </div>
                                     <div className={styles.NamesMap}>
                                         {banners.length > 0 ? (
                                             banners.map((banner, index) => (
                                                 <div key={index} className={styles.names}>
-                                                    <div className={styles.textBanners}><img src={banner.link} width={100}/></div>
+                                                    <div className={styles.textBanners}>
+                                                        <img src={banner.link} width={100} alt={`Banner ${index}`}/>
+                                                    </div>
                                                     <div
-                                                        className={`${styles.textBanners} ${!banner.is_successful ? styles.redBox : ''}`}>
-                                                        {banner.is_successful ? 'да' : 'нет'}
+                                                        className={`${styles.textBanners} ${!banner.is_succesfull ? styles.redBox : styles.greenBox}`}>
+                                                        {banner.is_succesfull ? 'да' : 'нет'}
                                                     </div>
                                                     <div className={styles.textBanners}>{banner.user}</div>
                                                     <div className={styles.textBanners}>{banner.updated_at}</div>
+                                                    <div className={styles.buttonContainer}>
+                                                        <button
+                                                            className={styles.successButton}
+                                                            onClick={() => handleStatusClick(index, true)}
+                                                        >
+                                                            Успешный
+                                                        </button>
+                                                        <button
+                                                            className={styles.failButton}
+                                                            onClick={() => handleStatusClick(index, false)}
+                                                        >
+                                                            Неуспешный
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))
                                         ) : (

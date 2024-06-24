@@ -1,6 +1,5 @@
 import AuthService from "../service/AuthService.js";
 import ImageCreateService from "../service/ImageCreateService.js";
-import BannerListService from "../service/ImageCreateService.js";
 
 export default class Store {
     isAuth = false;
@@ -66,6 +65,30 @@ export default class Store {
             return response.data;
         } catch (error) {
             console.log('Error bannerList', error);
+        }
+    }
+    async bannerTheme(){
+        try {
+            const responce = await ImageCreateService.bannerThemes();
+            return responce.data;
+        } catch (error) {
+            console.log('Error bannerTheme', error);
+        }
+    }
+    async createBannerWithoutText(content, extra_content, law_text, width, height, photo_style){
+        try {
+            const response = await ImageCreateService.createBannerWithoutText(content, extra_content,law_text,width, height,photo_style);
+            this.setBanner(response);
+            return response.data;
+        } catch(e) {
+            console.log('Error banner create', e)
+        }
+    }
+    async isSuccesfulBanner(id,is_succesfull){
+        try {
+            await ImageCreateService.isSuccesfulBanner(id,is_succesfull);
+        } catch(e) {
+            console.log('Error creating SuccesfulBanner', e);
         }
     }
 

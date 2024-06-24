@@ -103,6 +103,7 @@ body {
     font-weight: bold;
     background-color: #384B8E;
     height: 48px;
+    text-decoration: none;
 }
 
 
@@ -212,7 +213,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    gap: 10px;
+    gap: 9%;
     flex-grow: 1;
     flex-basis: 0;
 }
@@ -228,6 +229,21 @@ body {
 
 .redBox {
     color: red;
-    padding: 5px;
-    border-radius: 5px;
+}
+
+.failButton {
+    background-color: darkred;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.successButton {
+    background-color: darkgreen;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.greenBox {
+    color: darkgreen;
 }

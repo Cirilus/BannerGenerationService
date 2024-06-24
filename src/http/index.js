@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = "https://84.38.185.14.sslip.io/api/v1"
+export const API_URL = "https://84.38.185.14.sslip.io:8000/api/v1"
 
 const api = axios.create({
     withCredentials: true,

@@ -6,8 +6,12 @@ import Settings from '../../assets/Settings.svg';
 import { Link } from "react-router-dom";
 import Back from "../../assets/Back.svg";
 import Upload from "../../assets/Upload.svg";
-import { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "../../main.jsx";
+import IconToolTip from "./IconToolTip.jsx";
+import Ext from "../../assets/Ext.svg";
+import {FabricJSCanvas, useFabricJSEditor} from "fabricjs-react";
+import {fabric} from "fabric";
 
 const MainPage = () => {
     const { store } = useContext(Context);
@@ -16,19 +20,29 @@ const MainPage = () => {
     const [lawText, setLawText] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
     const [Photo_style, setPhoto_style] = useState('Реалистичный');
-    const [width, setWidth] = useState(300); // Default width
-    const [height, setHeight] = useState(250); // Default height
-    const [bannerCreated, setBannerCreated] = useState(false);
+    const [width, setWidth] = useState(800); // Default width
+    const [height, setHeight] = useState(900); // Default height
+    const [bannerCreated, setBannerCreated] = useState(true);
     const [bannerImage, setBannerImage] = useState('');
-    const [text, setText] = useState('');
-    const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
-    const [dragging, setDragging] = useState(false);
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const { editor, onReady } = useFabricJSEditor();
     const [textColor, setTextColor] = useState('#000000');
     const [textSize, setTextSize] = useState(16);
-    const canvasRef = useRef(null);
-    const textInputRef = useRef(null);
+    const [fontFamily, setFontFamily] = useState('Manrope');
+    const [opacity, setOpacity] = useState(1);
+    const [shapeColor, setShapeColor] = useState('#000000');
     const [isGenerating, setIsGenerating] = useState(false);
+    const [bannerTheme, setBannerTheme] = useState([]);
+    const [bannerTexts, setBannerTexts] = useState([]);
+    const [WithoutText, setWithoutText] = useState(false);
+
+
+    const triggerFileInput = () => {
+        document.getElementById('file-input').click();
+    };
+
+    const handleCheckboxChange = () => {
+        setWithoutText(prevState => !prevState);
+    };
 
     const handleFileChange = (e) => {
         setSelectedFile(e.target.files[0]);
@@ -37,112 +51,256 @@ const MainPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsGenerating(true);
-        try {
-            const response = await store.createBanner(content, extraContent, lawText, width, height, Photo_style);
-            if (response && response.images && response.images.length > 0) {
-                setBannerCreated(true);
-                setBannerImage(response.images[0]); // Извлекаем первое изображение
-                console.log('Banner created successfully');
-            } else {
-                console.error('No images found in the response');
+        if(WithoutText === true) {
+            try {
+                const response = await store.createBannerWithoutText(content, extraContent, lawText, width, height, Photo_style);
+                if (response && response.images && response.images.length > 0) {
+                    setBannerCreated(true);
+                    setBannerImage(response.images[1]);
+                    setBannerTexts(response.banners.texts);
+                    console.log('Banner created successfully');
+                } else {
+                    console.error('No images found in the response');
+                }
+            } catch (error) {
+                console.error('Error creating banner', error);
+            } finally {
+                setIsGenerating(false);
             }
-        } catch (error) {
-            console.error('Error creating banner', error);
-        } finally {
-            setIsGenerating(false);
+        } else {
+            try {
+                const response = await store.createBanner(content, extraContent, lawText, width, height, Photo_style);
+                if (response && response.images && response.images.length > 0) {
+                    setBannerCreated(true);
+                    setBannerImage(response.images[1]); // Извлекаем первое изображение
+                    console.log('Banner created successfully');
+                } else {
+                    console.error('No images found in the response');
+                }
+            } catch (error) {
+                console.error('Error creating banner', error);
+            } finally {
+                setIsGenerating(false);
+            }
         }
     };
+
+    useEffect(()=> {
+        store.bannerTheme().then(responce => {
+            setBannerTheme(responce);
+        })
+    },[])
+
 
     useEffect(() => {
-        if (bannerCreated && bannerImage) {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext('2d');
-            context.clearRect(0, 0, width, height); // Clear the canvas
-            const image = new Image();
-            image.onload = function() {
-                context.drawImage(image, 0, 0, width, height); // Draw the new image
-                context.font = `${textSize}px Arial`;
-                context.fillStyle = textColor;
-                context.fillText(text, textPosition.x, textPosition.y); // Draw the text
-            }
-            image.src = `data:image/png;base64,${bannerImage}`;
+        if (bannerImage && editor) {
+            const img = new Image();
+            img.src = `data:image/png;base64,${bannerImage}`;
+            img.onload = () => {
+                const fabricImage = new fabric.Image(img, {
+                    selectable: false, // Изображение не будет выделяться
+                    evented: false, // Изображение не будет реагировать на события
+                });
+                editor.canvas.add(fabricImage);
+                editor.canvas.sendToBack(fabricImage); // Отправляем изображение на задний план
+
+                // Добавление текста
+                bannerTexts.forEach((textObj) => {
+                    const { text, coordinates, style } = textObj;
+                    const fabricText = new fabric.Textbox(text, {
+                        left: coordinates.x,
+                        top: coordinates.y,
+                        fontSize: style['font-size'],
+                        fill: style.color,
+                        fontFamily: style.fontFamily || 'Arial',
+                        opacity: style.opacity || 1,
+                        editable: true,
+                    });
+                    editor.canvas.add(fabricText);
+                    editor.canvas.bringToFront(fabricText); // Перемещаем текст на передний план
+                });
+
+                editor.canvas.renderAll();
+            };
         }
-    }, [bannerCreated, bannerImage, text, textPosition, textColor, textSize, width, height]);
+    }, [bannerImage, editor, bannerTexts]);
 
-    const handleDoubleClick = (e) => {
-        const canvas = canvasRef.current;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const newText = prompt('Введите текст:');
-        if (newText !== null) {
-            setText(newText);
-            setTextPosition({ x, y });
-            drawTextOnCanvas(newText, x, y);
+    useEffect(() => {
+        if (editor) {
+            editor.canvas.setWidth(width);
+            editor.canvas.setHeight(height);
+            editor.canvas.renderAll();
         }
-    };
+    }, [editor, width, height]);
 
-    const handleTextChange = (e) => {
-        setText(e.target.value);
-        drawTextOnCanvas(e.target.value, textPosition.x, textPosition.y);
-    };
 
-    const drawTextOnCanvas = (text, x, y) => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        context.clearRect(0, 0, width, height); // Clear the canvas
-        const image = new Image();
-        image.onload = function() {
-            context.drawImage(image, 0, 0, width, height); // Draw the image
-            context.font = `${textSize}px Arial`;
-            context.fillStyle = textColor;
-            context.fillText(text, x, y); // Draw the text
+    useEffect(() => {
+        if (editor) {
+            editor.canvas.setWidth(width);
+            editor.canvas.setHeight(height);
+
+            const handleDoubleClick = (event) => {
+                const pointer = editor.canvas.getPointer(event.e);
+                const textbox = new fabric.Textbox('Пишите свой текст', {
+                    left: pointer.x,
+                    top: pointer.y,
+                    fontSize: textSize,
+                    fill: textColor,
+                    fontFamily: fontFamily,
+                    opacity: opacity,
+                    editable: true,
+                });
+                editor.canvas.add(textbox);
+                editor.canvas.setActiveObject(textbox);
+                editor.canvas.renderAll();
+            };
+
+            const handleObjectSelected = (e) => {
+                const activeObject = e.target;
+                if (activeObject.type === 'textbox') {
+                    setTextColor(activeObject.fill);
+                    setTextSize(activeObject.fontSize);
+                    setFontFamily(activeObject.fontFamily);
+                    setOpacity(activeObject.opacity);
+                } else if (activeObject.type === 'rect' || activeObject.type === 'circle') {
+                    setShapeColor(activeObject.fill);
+                    setOpacity(activeObject.opacity);
+                }
+            };
+
+            const handleKeyDown = (event) => {
+                const activeObject = editor.canvas.getActiveObject();
+                if (activeObject && event.key === 'Backspace') {
+                    if (activeObject.type !== 'textbox' || (activeObject.type === 'textbox' && !activeObject.isEditing)) {
+                        editor.canvas.remove(activeObject);
+                        editor.canvas.renderAll();
+                    }
+                }
+            };
+
+            editor.canvas.on('mouse:dblclick', handleDoubleClick);
+            editor.canvas.on('object:selected', handleObjectSelected);
+            window.addEventListener('keydown', handleKeyDown);
+
+            return () => {
+                editor.canvas.off('mouse:dblclick', handleDoubleClick);
+                editor.canvas.off('object:selected', handleObjectSelected);
+                window.removeEventListener('keydown', handleKeyDown);
+            };
+        }
+    }, [editor, textSize, textColor, fontFamily, opacity]);
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const imgObj = new Image();
+            imgObj.src = event.target.result;
+            imgObj.onload = () => {
+                const img = new fabric.Image(imgObj);
+                img.set({
+                    left: 0,
+                    top: 0,
+                    scaleX: editor.canvas.width / img.width,
+                    scaleY: editor.canvas.height / img.height,
+                });
+                editor.canvas.setBackgroundImage(img, editor.canvas.renderAll.bind(editor.canvas));
+            };
         };
-        image.src = `data:image/png;base64,${bannerImage}`;
-    };
-
-    const handleMouseDown = (e) => {
-        const canvas = canvasRef.current;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const context = canvas.getContext('2d');
-        context.font = `${textSize}px Arial`;
-        const textWidth = context.measureText(text).width;
-        const textHeight = textSize; // Approximate height
-
-        if (x >= textPosition.x && x <= textPosition.x + textWidth &&
-            y >= textPosition.y - textHeight && y <= textPosition.y) {
-            setDragging(true);
-            setOffset({ x: x - textPosition.x, y: y - textPosition.y });
-        }
-    };
-
-    const handleMouseMove = (e) => {
-        if (dragging) {
-            const canvas = canvasRef.current;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            setTextPosition({ x: x - offset.x, y: y - offset.y });
-            drawTextOnCanvas(text, x - offset.x, y - offset.y);
-        }
-    };
-
-    const handleMouseUp = () => {
-        setDragging(false);
+        reader.readAsDataURL(file);
     };
 
     const handleSaveCanvas = () => {
-        const canvas = canvasRef.current;
-        const image = canvas.toDataURL('image/png');
+        // Устанавливаем размер для toDataURL в пикселях
+        const canvasWidth = editor.canvas.getWidth();
+        const canvasHeight = editor.canvas.getHeight();
+
+        const dataURL = editor.canvas.toDataURL({
+            format: 'png',
+            multiplier: 1, // масштабирование, если нужно большее разрешение
+            width: canvasWidth,
+            height: canvasHeight
+        });
+
         const link = document.createElement('a');
-        link.href = image;
+        link.href = dataURL;
         link.download = 'banner.png';
         link.click();
     };
 
+
+    const handleFontSizeChange = (event) => {
+        const newSize = parseFloat(event.target.value);
+        setTextSize(newSize);
+        const activeObject = editor.canvas.getActiveObject();
+        if (activeObject && activeObject.type === 'textbox') {
+            activeObject.set({ fontSize: newSize });
+            editor.canvas.renderAll();
+        }
+    };
+
+    const handleFontColorChange = (event) => {
+        const newColor = event.target.value;
+        setTextColor(newColor);
+        const activeObject = editor.canvas.getActiveObject();
+        if (activeObject && activeObject.type === 'textbox') {
+            activeObject.set({ fill: newColor });
+            editor.canvas.renderAll();
+        }
+    };
+
+    const handleFontFamilyChange = (event) => {
+        const newFontFamily = event.target.value;
+        setFontFamily(newFontFamily);
+        const activeObject = editor.canvas.getActiveObject();
+        if (activeObject && activeObject.type === 'textbox') {
+            activeObject.set({ fontFamily: newFontFamily });
+            editor.canvas.renderAll();
+        }
+    };
+
+    const handleOpacityChange = (e) => {
+        const newOpacity = parseFloat(e.target.value);
+        setOpacity(newOpacity);
+        const activeObject = editor.canvas.getActiveObject();
+        if (activeObject) {
+            activeObject.set({ opacity: newOpacity });
+            editor.canvas.renderAll();
+        }
+    };
+
+    const handleShapeColorChange = (e) => {
+        const newColor = e.target.value;
+        setShapeColor(newColor);
+        const activeObject = editor.canvas.getActiveObject();
+        if (activeObject && (activeObject.type === 'rect' || activeObject.type === 'circle')) {
+            activeObject.set({ fill: newColor });
+            editor.canvas.renderAll();
+        }
+    };
+
+    const handleAddSquare = () => {
+        const square = new fabric.Rect({
+            left: 100,
+            top: 100,
+            fill: shapeColor,
+            width: 60,
+            height: 60,
+            opacity,
+        });
+        editor.canvas.add(square);
+    };
+
+    const handleAddCircle = () => {
+        const circle = new fabric.Circle({
+            left: 100,
+            top: 100,
+            fill: shapeColor,
+            radius: 30,
+            opacity,
+        });
+        editor.canvas.add(circle);
+    };
 
     const fileInputRef = useRef(null);
 
@@ -176,9 +334,10 @@ const MainPage = () => {
 
     const stylesBanner = [
         'Реалистичный',
-        'Мультяшный',
+        'Мультик',
         'Искусство',
-        'Аниме'
+        'Аниме',
+        'Звезды'
     ];
 
     return (
@@ -230,7 +389,7 @@ const MainPage = () => {
                                                         value={content}
                                                         onChange={(e) => setContent(e.target.value)}>
                                                     {services.map((service, index) => (
-                                                        <option key={index} value={service}>{service}</option>
+                                                        <option key={index} value={service}>{content}</option>
                                                     ))}
                                                 </select>
                                             </div>
@@ -249,43 +408,78 @@ const MainPage = () => {
                                         </div>
                                     </div>
                                     <div className={styles.Canvas}>
-                                        <canvas
-                                            ref={canvasRef}
-                                            width={width}
-                                            height={height}
-                                            onDoubleClick={handleDoubleClick}
-                                            onMouseDown={handleMouseDown}
-                                            onMouseMove={handleMouseMove}
-                                            onMouseUp={handleMouseUp}
-                                        ></canvas>
-                                        <input
-                                            ref={textInputRef}
-                                            type="text"
-                                            value={text}
-                                            onChange={handleTextChange}
-                                            style={{
-                                                position: 'absolute',
-                                                display: 'none',
-                                                fontSize: `${textSize}px`,
-                                                color: textColor,
-                                            }}
-                                        />
-                                        <label>
-                                            Цвет текста:
-                                            <input type="color" value={textColor}
-                                                   onChange={(e) => setTextColor(e.target.value)}/>
-                                        </label>
-                                        <label>
-                                            Размер текста:
-                                            <input
-                                                type="number"
-                                                value={textSize}
-                                                onChange={(e) => {
-                                                    setTextSize(e.target.value);
-                                                    drawTextOnCanvas(text, textPosition.x, textPosition.y);
-                                                }}
-                                            />
-                                        </label>
+                                        <div className={styles.test}>
+                                            <FabricJSCanvas className={styles.canvas} onReady={onReady} />
+                                            <div className={styles.Toolbar}>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleImageUpload}
+                                                    id="file-input"
+                                                    className={styles.HiddenFileInput}
+                                                />
+                                                <button onClick={triggerFileInput} className={styles.UploadButton}>
+                                                    <img src={Upload}/>
+                                                </button>
+                                                <button onClick={handleAddSquare} className={styles.Button}>Квадрат
+                                                </button>
+                                                <button onClick={handleAddCircle} className={styles.Button}>Круг
+                                                </button>
+                                                <div className={styles.InputGroup}>
+                                                    <label>Цвет текста: </label>
+                                                    <input
+                                                        type="color"
+                                                        value={textColor}
+                                                        onChange={handleFontColorChange}
+                                                        className={styles.ColorInput}
+                                                    />
+                                                </div>
+                                                <div className={styles.InputGroup}>
+                                                    <label>Размер: </label>
+                                                    <input
+                                                        type="number"
+                                                        value={textSize}
+                                                        onChange={handleFontSizeChange}
+                                                        className={styles.NumberInput}
+                                                    />
+                                                </div>
+                                                <div className={styles.InputGroup}>
+                                                    <label>Шрифт: </label>
+                                                    <select
+                                                        value={fontFamily}
+                                                        onChange={handleFontFamilyChange}
+                                                        className={styles.SelectInput}
+                                                    >
+                                                        <option value="Arial">Arial</option>
+                                                        <option value="Courier New">Courier New</option>
+                                                        <option value="Times New Roman">Times New Roman</option>
+                                                        <option value="Verdana">Verdana</option>
+                                                        <option value="Manrope">Manrope</option>
+                                                    </select>
+                                                </div>
+                                                <div className={styles.InputGroup}>
+                                                    <label>Цвет фигуры: </label>
+                                                    <input
+                                                        type="color"
+                                                        value={shapeColor}
+                                                        onChange={handleShapeColorChange}
+                                                        className={styles.ColorInput}
+                                                    />
+                                                </div>
+                                                <div className={styles.InputGroup}>
+                                                    <label>Прозрачность: </label>
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="1"
+                                                        step="0.1"
+                                                        value={opacity}
+                                                        onChange={handleOpacityChange}
+                                                        className={styles.RangeInput}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -312,7 +506,7 @@ const MainPage = () => {
                                             </div>
                                             <div className={styles.BackContainer}>
                                                 <img src={Back} className={styles.BackLogo} alt="BackButton"/>
-                                                <div>Назад</div>
+                                                <Link to={"/main"} className={styles.backButton}>Назад</Link>
                                             </div>
                                         </div>
                                         <div className={styles.BannerContent}>
@@ -323,8 +517,8 @@ const MainPage = () => {
                                                 <select id="services-dropdown" className={styles.Dropdown}
                                                         value={content}
                                                         onChange={(e) => setContent(e.target.value)}>
-                                                    {services.map((service, index) => (
-                                                        <option key={index} value={service}>{service}</option>
+                                                    {bannerTheme.map((banner, index) => (
+                                                        <option key={index} value={banner.title}>{banner.title}</option>
                                                     ))}
                                                 </select>
                                             </div>
@@ -342,9 +536,8 @@ const MainPage = () => {
                                             </div>
                                             <div className={styles.BannerQuestion}>
                                                 <div className={styles.nameOfBannerContainer}>
-                                                    Ваш запрос<strong className={styles.strong}>*</strong>
-                                                    <text className={styles.background}>Обязательное поле. Опишите ваш баннер
-                                                    </text>
+                                                    Ваш запрос<strong className={styles.strong}>*</strong> <IconToolTip
+                                                    icon={Ext} text={'Обязательное поле. Опишите ваш баннер'}/>
                                                 </div>
                                                 <textarea type={'text'} className={styles.textField}
                                                           value={extraContent}
@@ -352,62 +545,77 @@ const MainPage = () => {
                                             </div>
                                             <div className={styles.BannerQuestion}>
                                                 <div className={styles.nameOfBannerContainer}>
-                                                    Размеры баннера <strong className={styles.strong}>*</strong>
+                                                    Размеры баннера <strong
+                                                    className={styles.strong}>*</strong><IconToolTip icon={Ext}
+                                                                                                     text={'Обязательное поле. Укажите размеры вашего баннера, но не более 1200 на 1000'}/>
                                                 </div>
-                                                <input type={'number'} className={styles.NumberField} placeholder={'Ширина'}
-                                                       value={width}
+                                                <input type={'number'} className={styles.NumberField}
+                                                       placeholder={'Ширина'}
+                                                       value={width} max="1200"
                                                        onChange={(e) => setWidth(e.target.value)}
                                                 ></input>
-                                                <input type={'number'} className={styles.NumberField} placeholder={'Длина'}
-                                                       value={height}
-                                                       onChange={(e)=>setHeight(e.target.value)}
+                                                <input type={'number'} className={styles.NumberField}
+                                                       placeholder={'Длина'}
+                                                       value={height} max="1000"
+                                                       onChange={(e) => setHeight(e.target.value)}
                                                 ></input>
                                             </div>
                                             <div className={styles.BannerLaw}>
                                                 <div className={styles.nameOfBannerContainer}>
-                                                    Юридический текст
+                                                    Юридический текст<strong
+                                                    className={styles.strong}>*</strong><IconToolTip icon={Ext}
+                                                                                                     text={'Обязательное поле. Заполните поле для юридической информации об условиях продукта'}/>
                                                 </div>
                                                 <textarea type={'text'} className={styles.textField}
                                                           value={lawText}
                                                           onChange={(e) => setLawText(e.target.value)} required/>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className={styles.ContentBannerContainer}>
-                                    <div className={styles.ContentBannerPadding}>
-                                        <div className={styles.HeaderOfBanner}>
-                                            <div className={styles.NumberContainer}>
-                                                <div className={styles.Number}>2</div>
-                                                <div className={styles.TextNumber}>Фотография</div>
-                                            </div>
-                                        </div>
-                                        <div className={styles.UploadImage}>
-                                            <div className={styles.BannerThemeContainer}>
-                                                <div className={styles.nameOfBannerContainer}>
-                                                    Изображение, используемое на баннере
-                                                </div>
-                                                <div className={styles.UploadImageContainer}>
-                                                    <div className={styles.Upload}>
-                                                        <input
-                                                            type="file"
-                                                            id="fileUpload"
-                                                            ref={fileInputRef}
-                                                            className={styles.hiddenInput}
-                                                            onChange={handleFileChange}
-                                                        />
-                                                        <button type="button" className={styles.customButton} onClick={handleButtonClick}>
-                                                            <img src={Upload} className={styles.Image}/> Нажмите, чтобы добавить изображение
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                            <div className={styles.BannerQuestionCheck}>
+                                                    <input
+                                                        className={styles.CheckFiels}
+                                                        type="checkbox"
+                                                        checked={WithoutText}
+                                                        onChange={handleCheckboxChange}
+                                                    />
+                                                <text>Расположить текст самому</text>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                {/*<div className={styles.ContentBannerContainer}>*/}
+                                {/*    <div className={styles.ContentBannerPadding}>*/}
+                                {/*        <div className={styles.HeaderOfBanner}>*/}
+                                {/*            <div className={styles.NumberContainer}>*/}
+                                {/*                <div className={styles.Number}>2</div>*/}
+                                {/*                <div className={styles.TextNumber}>Фотография</div>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*        <div className={styles.UploadImage}>*/}
+                                {/*            <div className={styles.BannerThemeContainer}>*/}
+                                {/*                <div className={styles.nameOfBannerContainer}>*/}
+                                {/*                    Изображение, используемое на баннере*/}
+                                {/*                </div>*/}
+                                {/*                <div className={styles.UploadImageContainer}>*/}
+                                {/*                    <div className={styles.Upload}>*/}
+                                {/*                        <input*/}
+                                {/*                            type="file"*/}
+                                {/*                            id="fileUpload"*/}
+                                {/*                            ref={fileInputRef}*/}
+                                {/*                            className={styles.hiddenInput}*/}
+                                {/*                            onChange={handleFileChange}*/}
+                                {/*                        />*/}
+                                {/*                        <button type="button" className={styles.customButton} onClick={handleButtonClick}>*/}
+                                {/*                            <img src={Upload} className={styles.Image}/> Нажмите, чтобы добавить изображение*/}
+                                {/*                        </button>*/}
+                                {/*                    </div>*/}
+                                {/*                </div>*/}
+                                {/*            </div>*/}
+                                {/*        </div>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                             </div>
                             <div className={styles.ButtonsFooter}>
-                                {isGenerating && <span>Генерируется баннер, ожидайте</span>}
+                                {isGenerating && <span className={styles.ButtonGenerate}>Генерируется баннер, ожидайте</span>}
                                 <button className={styles.SaveButton}>Сохранить черновик</button>
                                 <button type={'button'} className={styles.DaleeButton} onClick={handleSubmit}>Далее</button>
                             </div>
